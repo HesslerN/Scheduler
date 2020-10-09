@@ -3,10 +3,17 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import UserContext from '../UserContext';
 import CourseList from '../components/CourseList';
 import CourseEditScreen from './CourseEditScreen';
+import { firebase } from "../firebase.js"
 
 const Banner = ({title}) => (
   <Text style={styles.bannerStyle}>{title || '[loading...]'}</Text>
 );
+const db = firebase.database().ref();
+
+const fixCourses = json => ({
+  ...json,
+  courses: Object.values(json.courses)
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -27,6 +34,14 @@ const ScheduleScreen = ({navigation}) => {
   const view = (course) => {
     navigation.navigate(canEdit ? 'CourseEditScreen' : 'CourseDetailScreen', { course });
   };
+  useEffect(() => {
+      const db = firebase.database().ref();
+      const handleData = snap => {
+        if (snap.val()) setSchedule(fixCourses(snap.val()));
+      }
+      db.on('value', handleData, error => alert(error));
+      return () => { db.off('value', handleData); };
+  }, []);
 
   const url = 'https://courses.cs.northwestern.edu/394/data/cs-courses.php';
 
