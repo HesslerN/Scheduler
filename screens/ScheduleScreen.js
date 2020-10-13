@@ -5,6 +5,7 @@ import CourseList from '../components/CourseList';
 import CourseEditScreen from './CourseEditScreen';
 import { firebase } from "../firebase.js"
 
+
 const Banner = ({title}) => (
   <Text style={styles.bannerStyle}>{title || '[loading...]'}</Text>
 );
